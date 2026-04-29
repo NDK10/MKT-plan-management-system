@@ -61,7 +61,7 @@ public class AccountController {
             return ResponseEntity.ok("Account deleted successfully");
         } catch (Exception e) {
             log.error("Error deleting account: {}", e.getMessage());
-            return ResponseEntity.badRequest().body("Error deleting account: " + e.getMessage());
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
@@ -73,6 +73,17 @@ public class AccountController {
         } catch (Exception e) {
             log.error("Error fetching accounts: {}", e.getMessage());
             return ResponseEntity.badRequest().body("Error fetching accounts: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/user-responsible")
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('LEADER')")
+    public ResponseEntity<Object> getUserResponsible() {
+        try {
+            return ResponseEntity.ok(accountService.getUserResponsible());
+        } catch (Exception e) {
+            log.error("Error fetching user responsible accounts: {}", e.getMessage());
+            return ResponseEntity.badRequest().body("Error fetching user responsible accounts: " + e.getMessage());
         }
     }
 

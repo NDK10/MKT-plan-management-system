@@ -11,6 +11,8 @@ public interface CampaignAccountRepository extends JpaRepository<CampaignAccount
 
     List<CampaignAccount> findByCampaignId(Long campaignId);
 
+    List<CampaignAccount> findByAccountId(Long accountId);
+
     void deleteByCampaignId(Long campaignId);
 
     boolean existsByCampaignIdAndAccountId(Long campaignId, Long accountId);

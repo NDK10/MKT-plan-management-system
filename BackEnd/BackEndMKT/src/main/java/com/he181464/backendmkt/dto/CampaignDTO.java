@@ -49,4 +49,10 @@ public class CampaignDTO {
     private LocalDateTime updatedAt;
 
     private List<Long> accountIds;
+
+    private String userResponsibleName;
+
+    private String userResponsibleEmail;
+
+    private List<AccountResponseDto> accountResponseDtoList;
 }

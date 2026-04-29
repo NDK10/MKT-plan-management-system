@@ -4,10 +4,12 @@ package com.he181464.backendmkt.service.impl;
 import com.he181464.backendmkt.dto.AccountDto;
 import com.he181464.backendmkt.dto.AccountResponseDto;
 import com.he181464.backendmkt.entity.Account;
+import com.he181464.backendmkt.entity.CampaignAccount;
 import com.he181464.backendmkt.exception.ObjectExistingException;
 import com.he181464.backendmkt.model.mapper.AccountMapper;
 import com.he181464.backendmkt.model.request.AccountRequest;
 import com.he181464.backendmkt.repository.AccountRepository;
+import com.he181464.backendmkt.repository.CampaignAccountRepository;
 import com.he181464.backendmkt.repository.RoleRepository;
 import com.he181464.backendmkt.service.AccountService;
 import com.he181464.backendmkt.specification.AccountSpecification;
@@ -35,6 +37,7 @@ public class AccountServiceImpl implements AccountService {
     private final AccountMapper accountMapper;
     private final PasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository;
+    private final CampaignAccountRepository campaignAccountRepository;
 
     @Override
     @Transactional
@@ -147,10 +150,19 @@ public class AccountServiceImpl implements AccountService {
     @Override
     @Transactional
     public void deleteAccount(long accountId) {
+        List<CampaignAccount> campaignAccounts = campaignAccountRepository.findByAccountId(accountId);
+        if (!campaignAccounts.isEmpty()) {
+            throw new IllegalStateException("Không thể xóa tài khoản đang được sử dụng trong dự án");
+        }
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new IllegalArgumentException("Account not found"));
         account.setStatus(0);
         accountRepository.save(account);
+    }
+
+    @Override
+    public List<AccountResponseDto> getUserResponsible() {
+        return accountRepository.findByStatusAndRoleId(1, 1L).stream().map(accountMapper::toDTO).toList();
     }
 
 

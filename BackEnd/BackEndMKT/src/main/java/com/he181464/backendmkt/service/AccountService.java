@@ -39,6 +39,8 @@ public interface AccountService {
 
     void deleteAccount(long accountId);
 
+    List<AccountResponseDto> getUserResponsible();
+
 
 
 }

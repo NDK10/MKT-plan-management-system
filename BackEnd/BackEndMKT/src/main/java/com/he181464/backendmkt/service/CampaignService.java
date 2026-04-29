@@ -1,6 +1,10 @@
 package com.he181464.backendmkt.service;
 
+
 import com.he181464.backendmkt.dto.CampaignDTO;
+import com.he181464.backendmkt.model.request.AccountRequest;
+import com.he181464.backendmkt.model.request.CampaignRequest;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -16,4 +20,9 @@ public interface CampaignService {
 
     List<CampaignDTO> getAll();
 
+    CampaignDTO acceptCampaign(Long id);
+
+    CampaignDTO rejectCampaign(Long id);
+
+    Page<CampaignDTO> searchCampaigns(CampaignRequest campaignRequest);
 }
