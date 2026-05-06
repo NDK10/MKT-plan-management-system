@@ -17,11 +17,13 @@ public class DetailPlanController {
     private final DetailPlanService detailPlanService;
 
     @PostMapping("/create")
+    @PreAuthorize("hasAuthority('LEADER')")
     public ResponseEntity<Object> create(@RequestBody DetailPlanDto dto) {
         return ResponseEntity.ok(detailPlanService.create(dto));
     }
 
     @PutMapping("/update")
+    @PreAuthorize("hasAuthority('LEADER')")
     public ResponseEntity<Object> update(@RequestBody DetailPlanDto dto) {
         return ResponseEntity.ok(detailPlanService.update(dto));
     }
@@ -41,6 +43,23 @@ public class DetailPlanController {
     @PostMapping("/search-by-calendar")
     public ResponseEntity<Object> searchByCalendar(@RequestBody DetailPlanCalendarRequest dto) {
         return ResponseEntity.ok(detailPlanService.searchByCalendar(dto));
+    }
+
+    @PostMapping("/update-content")
+    public ResponseEntity<Object> updateContent(@RequestBody DetailPlanDto dto) {
+        return ResponseEntity.ok(detailPlanService.updateContent(dto));
+    }
+
+    @PostMapping("/approve-content")
+    @PreAuthorize("hasAuthority('LEADER')")
+    public ResponseEntity<Object> approveContent(@RequestBody DetailPlanDto dto) {
+        return ResponseEntity.ok(detailPlanService.approveContent(dto));
+    }
+
+    @PostMapping("/update-status-complete/{id}")
+    public ResponseEntity<Object> updateStatusComplete(@PathVariable Long id) {
+        detailPlanService.updateStatusComplete(id);
+        return ResponseEntity.ok("Đã cập nhật trạng thái hoàn thành");
     }
 
 

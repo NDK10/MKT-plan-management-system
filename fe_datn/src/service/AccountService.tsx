@@ -23,5 +23,22 @@ const AccountService = {
   getAll: async () => {
     return axiosApi.get("http://localhost:8063/api/accounts/all");
   },
+  getAccountById: async (id: number) => {
+    return axiosApi.get(
+      `http://localhost:8063/api/accounts/get-account-id/${id}`,
+    );
+  },
+  updateProfile: async (data: any, id: number) => {
+    return axiosApi.post(
+      `http://localhost:8063/api/accounts/change-profile/${id}`,
+      data,
+    );
+  },
+  changePassword: async (data: any) => {
+    return axiosApi.post(
+      `http://localhost:8063/api/accounts/change-password`,
+      data,
+    );
+  },
 };
 export default AccountService;

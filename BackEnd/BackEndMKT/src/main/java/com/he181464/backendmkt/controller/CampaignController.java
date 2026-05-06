@@ -1,6 +1,7 @@
 package com.he181464.backendmkt.controller;
 
 import com.he181464.backendmkt.dto.CampaignDTO;
+import com.he181464.backendmkt.dto.StatusCountDTO;
 import com.he181464.backendmkt.model.request.CampaignRequest;
 import com.he181464.backendmkt.service.CampaignService;
 import lombok.RequiredArgsConstructor;
@@ -69,6 +70,23 @@ public class CampaignController {
     @PostMapping("/search")
     public ResponseEntity<Object> searchCampaigns(@RequestBody CampaignRequest campaignRequest) {
         return ResponseEntity.ok(campaignService.searchCampaigns(campaignRequest));
+    }
+
+    @GetMapping("/dashboard/status")
+    public ResponseEntity<Object> status() {
+        return ResponseEntity.ok(campaignService.getCampaignStatusChart());
+    }
+
+    @GetMapping("/dashboard/cost")
+    public ResponseEntity<?> getCostChart() {
+        return ResponseEntity.ok(campaignService.getCompletedCampaignCosts());
+    }
+
+    @PostMapping("/complete-campaign/{id}")
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('LEADER')")
+    public ResponseEntity<?> completeCampaign(@PathVariable Long id) {
+        campaignService.completeCampaign(id);
+        return ResponseEntity.ok("Campaign marked as completed successfully");
     }
 
 

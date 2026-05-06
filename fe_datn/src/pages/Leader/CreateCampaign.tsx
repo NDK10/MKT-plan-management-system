@@ -14,6 +14,7 @@ import {
 import dayjs from "dayjs";
 import AccountService from "../../service/AccountService";
 import CampaignService from "../../service/CampaignService";
+import { jwtDecode } from "jwt-decode";
 
 const { TextArea } = Input;
 const { Option } = Select;
@@ -32,14 +33,29 @@ export default function CreateCampaign() {
     }
   };
 
+  const getUserFromToken = () => {
+    const token = localStorage.getItem("accessToken");
+    if (!token) return null;
+
+    try {
+      const decoded: any = jwtDecode(token);
+
+      return decoded?.accountId;
+    } catch (e) {
+      return null;
+    }
+  };
+
   useEffect(() => {
     fetchAccounts();
   }, []);
 
   const handleSubmit = async (values: any) => {
     try {
+      const userId = getUserFromToken();
       const payload = {
         ...values,
+        userResponsible: userId,
         dateStart: values.dateStart ? values.dateStart.toISOString() : null,
         dateComplete: values.dateComplete
           ? values.dateComplete.toISOString()
@@ -57,13 +73,13 @@ export default function CreateCampaign() {
       form.resetFields();
     } catch (error: any) {
       notification.error({
-        message: error?.response?.data?.message || "Có lỗi xảy ra",
+        message: error?.response?.data || "Có lỗi xảy ra",
       });
     }
   };
 
   return (
-    <Card title="Thêm mới Campaign">
+    <Card title="Thêm mới Chiến dịch marketing">
       <Form form={form} layout="vertical" onFinish={handleSubmit}>
         <Row gutter={16}>
           <Col span={12}>
@@ -83,25 +99,6 @@ export default function CreateCampaign() {
               rules={[{ required: true, message: "Nhập tên" }]}
             >
               <Input placeholder="Nhập tên campaign" />
-            </Form.Item>
-          </Col>
-
-          <Col span={12}>
-            <Form.Item name="status" label="Trạng thái">
-              <Select
-                options={[
-                  { label: "Đang chạy", value: "PROGRESS" },
-                  { label: "Hoàn thành", value: "COMPLETE" },
-                  { label: "Hủy", value: "CANCEL" },
-                ]}
-                placeholder="Chọn trạng thái"
-              />
-            </Form.Item>
-          </Col>
-
-          <Col span={12}>
-            <Form.Item name="userResponsible" label="Người phụ trách">
-              <Input placeholder="Nhập user id" />
             </Form.Item>
           </Col>
 
@@ -155,8 +152,19 @@ export default function CreateCampaign() {
           </Col>
 
           <Col span={24}>
-            <Form.Item name="fileUrl" label="File URL">
-              <Input placeholder="Link file" />
+            <Form.Item
+              name="fileUrl"
+              label="Link tài liệu"
+              rules={[
+                { required: true, message: "Vui lòng nhập link Google Drive" },
+                {
+                  pattern:
+                    /^https:\/\/(drive\.google\.com)\/(file\/d\/|drive\/folders\/|open\?id=)/,
+                  message: "Link phải là Google Drive hợp lệ",
+                },
+              ]}
+            >
+              <Input placeholder="Dán link Google Drive..." />
             </Form.Item>
           </Col>
 

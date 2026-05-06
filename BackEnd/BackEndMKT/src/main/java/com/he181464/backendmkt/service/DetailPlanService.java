@@ -21,4 +21,10 @@ public interface DetailPlanService {
 
     List<DetailPlanDto> searchByCalendar(DetailPlanCalendarRequest detailPlanCalendarRequest);
 
+    DetailPlanDto updateContent(DetailPlanDto dto);
+
+    DetailPlanDto approveContent(DetailPlanDto dto);
+
+    void updateStatusComplete(Long id);
+
 }

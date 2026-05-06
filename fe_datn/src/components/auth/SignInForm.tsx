@@ -41,7 +41,6 @@ export default function SignInForm() {
       const status = error?.response?.status;
 
       if (status === 436) {
-        console.log("Tài khoản bị khóa");
         notification.error({
           message: "Tài khoản bị khóa",
           description:

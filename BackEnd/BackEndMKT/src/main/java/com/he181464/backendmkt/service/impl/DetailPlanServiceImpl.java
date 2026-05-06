@@ -58,10 +58,12 @@ public class DetailPlanServiceImpl implements DetailPlanService {
     @Override
     public DetailPlanDto update(DetailPlanDto dto) {
         DetailPlan detailPlan = detailPlanRepository.findById(dto.getId()).orElseThrow(() -> new RuntimeException("Không tìm thấy kế hoạch chi tiết"));
+        String status = detailPlan.getStatus();
         detailPlan = detailPlanMapper.toEntity(dto);
         detailPlan.setContent(dto.getContent());
         detailPlan.setLinkDrive(dto.getLinkDrive());
         detailPlan.setUpdatedAt(LocalDateTime.now());
+        detailPlan.setStatus(status);
         detailPlanRepository.save(detailPlan);
         return detailPlanMapper.toDTO(detailPlan);
     }
@@ -105,5 +107,32 @@ public class DetailPlanServiceImpl implements DetailPlanService {
         List<DetailPlan> detailPlanPage = detailPlanRepository.findAll(specification);
 
         return detailPlanPage.stream().map(detailPlanMapper::toDTO).toList();
+    }
+
+    @Override
+    public DetailPlanDto updateContent(DetailPlanDto dto) {
+        DetailPlan detailPlan = detailPlanRepository.findById(dto.getId()).orElseThrow(() -> new RuntimeException("Không tìm thấy kế hoạch chi tiết"));
+        detailPlan.setContent(dto.getContent());
+        detailPlan.setLinkDrive(dto.getLinkDrive());
+        detailPlan.setUpdatedAt(LocalDateTime.now());
+        detailPlan.setStatus("WAITING");
+        detailPlanRepository.save(detailPlan);
+        return detailPlanMapper.toDTO(detailPlan);
+    }
+
+    @Override
+    public DetailPlanDto approveContent(DetailPlanDto dto) {
+        DetailPlan detailPlan = detailPlanRepository.findById(dto.getId()).orElseThrow(() -> new RuntimeException("Không tìm thấy kế hoạch chi tiết"));
+        detailPlan.setStatus("INPROGRESS");
+        detailPlan.setUpdatedAt(LocalDateTime.now());
+        detailPlanRepository.save(detailPlan);
+        return detailPlanMapper.toDTO(detailPlan);
+    }
+
+    @Override
+    public void updateStatusComplete(Long id) {
+        DetailPlan detailPlan = detailPlanRepository.findById(id).orElseThrow(() -> new RuntimeException("Không tìm thấy kế hoạch chi tiết"));
+        detailPlan.setStatus("COMPLETED");
+        detailPlanRepository.save(detailPlan);
     }
 }

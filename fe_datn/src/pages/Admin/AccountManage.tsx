@@ -10,12 +10,14 @@ import {
   notification,
   Table,
   Tag,
+  Tooltip,
 } from "antd";
 import type { TableColumnsType, TableProps } from "antd";
 import AccountService from "../../service/AccountService";
 import AccountDetailForm from "./components/AccountDetailForm";
 import AccountFilterForm from "./components/AccountFilterForm";
 import dayjs from "dayjs";
+import { DeleteOutlined, EditOutlined } from "@ant-design/icons";
 
 type TableRowSelection<T extends object = object> =
   TableProps<T>["rowSelection"];
@@ -63,13 +65,17 @@ export default function AccountManage() {
       title: "Hành động",
       render: (_, record) => (
         <>
-          <Button type="link" onClick={() => handleEdit(record)}>
-            Sửa
-          </Button>
+          <Tooltip title="Sửa tài khoản">
+            <Button type="link" onClick={() => handleEdit(record)}>
+              <EditOutlined />
+            </Button>
+          </Tooltip>
 
-          <Button type="link" danger onClick={() => handleDelete(record)}>
-            Xóa
-          </Button>
+          <Tooltip title="Xóa tài khoản">
+            <Button type="link" danger onClick={() => handleDelete(record)}>
+              <DeleteOutlined />
+            </Button>
+          </Tooltip>
         </>
       ),
     },
@@ -139,9 +145,10 @@ export default function AccountManage() {
 
           setFilter((prev) => ({ ...prev }));
         } catch (err) {
+          console.error("abcde", err.response?.data);
           notification.error({
             message: "Lỗi",
-            description: "Xóa thất bại",
+            description: err.response?.data || "Xóa tài khoản thất bại",
             placement: "topRight",
             getContainer: () => document.body, // ép ra ngoài layout
           });

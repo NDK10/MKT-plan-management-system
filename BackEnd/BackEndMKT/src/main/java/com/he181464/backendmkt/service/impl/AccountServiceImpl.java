@@ -30,7 +30,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
+@Transactional
 public class AccountServiceImpl implements AccountService {
 
     private final AccountRepository accountRepository;
@@ -163,6 +163,45 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public List<AccountResponseDto> getUserResponsible() {
         return accountRepository.findByStatusAndRoleId(1, 1L).stream().map(accountMapper::toDTO).toList();
+    }
+
+    @Override
+    public AccountDto changeProfile(Long id, AccountDto accountDto) {
+        Account account = accountRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Account not found"));
+        account.setFullName(accountDto.getFullName());
+        account.setPhoneNumber(accountDto.getPhoneNumber());
+        account.setAddress(accountDto.getAddress());
+        account.setDateOfBirth(accountDto.getDateOfBirth());
+        Account updatedAccount = accountRepository.save(account);
+        return AccountDto.builder()
+                .email(updatedAccount.getEmail())
+                .fullName(updatedAccount.getFullName())
+                .phoneNumber(updatedAccount.getPhoneNumber())
+                .address(updatedAccount.getAddress())
+                .dateOfBirth(updatedAccount.getDateOfBirth())
+                .build();
+    }
+
+    @Override
+    public AccountDto getAccountById(Long id) {
+        Account account = accountRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Account not found"));
+        return AccountDto.builder()
+                .email(account.getEmail())
+                .fullName(account.getFullName())
+                .phoneNumber(account.getPhoneNumber())
+                .address(account.getAddress())
+                .dateOfBirth(account.getDateOfBirth())
+                .build();
+    }
+
+    @Override
+    public void updateNewPassword(Long id, String oldPassword, String newPassword) {
+        Account account = accountRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Account not found"));
+        if (!passwordEncoder.matches(oldPassword, account.getPassword())) {
+            throw new IllegalArgumentException("Mật khẩu cũ không đúng");
+        }
+        account.setPassword(passwordEncoder.encode(newPassword));
+        accountRepository.save(account);
     }
 
 

@@ -41,6 +41,14 @@ public interface AccountService {
 
     List<AccountResponseDto> getUserResponsible();
 
+    AccountDto changeProfile(Long id, AccountDto accountDto);
+
+    AccountDto getAccountById(Long id);
+
+    void updateNewPassword(Long id,String oldPassword, String newPassword);
+
+
+
 
 
 }

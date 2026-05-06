@@ -1,6 +1,7 @@
 package com.he181464.backendmkt.controller;
 
 import com.he181464.backendmkt.dto.AccountDto;
+import com.he181464.backendmkt.dto.ResetPasswordDto;
 import com.he181464.backendmkt.model.request.AccountRequest;
 import com.he181464.backendmkt.service.AccountService;
 import lombok.RequiredArgsConstructor;
@@ -84,6 +85,42 @@ public class AccountController {
         } catch (Exception e) {
             log.error("Error fetching user responsible accounts: {}", e.getMessage());
             return ResponseEntity.badRequest().body("Error fetching user responsible accounts: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/change-profile/{id}")
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('LEADER') or hasAuthority('EMPLOYEE')")
+    public ResponseEntity<Object> changeProfile(@PathVariable Long id, @RequestBody AccountDto accountDto) {
+        try {
+            AccountDto updatedProfile = accountService.changeProfile(id, accountDto);
+            return ResponseEntity.ok(updatedProfile);
+        } catch (Exception e) {
+            log.error("Error changing profile: {}", e.getMessage());
+            return ResponseEntity.badRequest().body("Error changing profile: " + e.getMessage());
+        }
+    }
+
+    @GetMapping("/get-account-id/{id}")
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('LEADER') or hasAuthority('EMPLOYEE')")
+    public ResponseEntity<Object> getAccountIdByEmail(@PathVariable Long id) {
+        try {
+            AccountDto accountId = accountService.getAccountById(id);
+            return ResponseEntity.ok(accountId);
+        } catch (Exception e) {
+            log.error("Error fetching account ID: {}", e.getMessage());
+            return ResponseEntity.badRequest().body("Error fetching account ID: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/change-password")
+    @PreAuthorize("hasAuthority('ADMIN') or hasAuthority('LEADER') or hasAuthority('EMPLOYEE')")
+    public ResponseEntity<Object> changePassword(@RequestBody ResetPasswordDto resetPasswordDto) {
+        try {
+            accountService.updateNewPassword(resetPasswordDto.getAccountId(), resetPasswordDto.getOldPassword(), resetPasswordDto.getNewPassword());
+            return ResponseEntity.ok("Password updated successfully");
+        } catch (Exception e) {
+            log.error("Error changing password: {}", e.getMessage());
+            return ResponseEntity.badRequest().body("Error changing password: " + e.getMessage());
         }
     }
 

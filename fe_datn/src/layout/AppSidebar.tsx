@@ -69,30 +69,9 @@ const assignedNavItems = (role: string) => {
   if (role === "LEADER") {
     return [
       {
-        icon: <GridIcon />,
-        name: `Dashboard`,
-        path: `${firstNavName}`,
-      },
-      {
-        icon: <CalenderIcon />,
-        name: "Lịch",
-        path: `${firstNavName}/calendar`,
-      },
-      {
         icon: <UserCircleIcon />,
         name: "Thông tin cá nhân",
         path: `${firstNavName}/profile`,
-      },
-      {
-        name: "Forms",
-        icon: <ListIcon />,
-        subItems: [
-          {
-            name: "Form Elements",
-            path: `${firstNavName}/form-elements`,
-            pro: false,
-          },
-        ],
       },
       {
         name: "Chiến dịch marketing",
@@ -100,17 +79,12 @@ const assignedNavItems = (role: string) => {
         subItems: [
           {
             name: "Các chiến dịch",
-            path: `${firstNavName}/campaigns`,
+            path: `${firstNavName}/list-campaign`,
             pro: false,
           },
           {
             name: "Tạo chiến dịch",
             path: `${firstNavName}/create-campaign`,
-            pro: false,
-          },
-          {
-            name: "Chi tiết kế hoạch",
-            path: `${firstNavName}/basic-tables`,
             pro: false,
           },
         ],
@@ -125,6 +99,31 @@ const assignedNavItems = (role: string) => {
       },
     ];
   } else if (role === "EMPLOYEE") {
+    return [
+      {
+        icon: <CalenderIcon />,
+        name: "Lịch",
+        path: `${firstNavName}`,
+      },
+      {
+        icon: <UserCircleIcon />,
+        name: "Thông tin cá nhân",
+        path: `${firstNavName}/profile`,
+      },
+      {
+        name: "Các chiến dịch marketing ",
+        icon: <TableIcon />,
+        path: `${firstNavName}/employee-campaigns`,
+      },
+      {
+        name: "Trợ thủ AI",
+        icon: <PageIcon />,
+        subItems: [
+          { name: "Blank Page", path: `${firstNavName}/blank`, pro: false },
+          { name: "404 Error", path: `${firstNavName}/error-404`, pro: false },
+        ],
+      },
+    ];
   } else if (role === "ADMIN") {
     return [
       {
@@ -133,17 +132,12 @@ const assignedNavItems = (role: string) => {
         path: `${firstNavName}`,
       },
       {
-        icon: <CalenderIcon />,
-        name: "Lịch",
-        path: `${firstNavName}/calendar`,
-      },
-      {
         icon: <UserCircleIcon />,
         name: "Thông tin cá nhân",
         path: `${firstNavName}/profile`,
       },
       {
-        name: "Quản lý tài khoản",
+        name: "Quản lý nhân viên",
         icon: <ListIcon />,
         path: `${firstNavName}/accounts`,
       },
@@ -152,13 +146,23 @@ const assignedNavItems = (role: string) => {
         icon: <TableIcon />,
         subItems: [
           {
-            name: "Các chiến dịch",
-            path: `${firstNavName}/campaigns`,
+            name: "Các chiến dịch chờ duyệt",
+            path: `${firstNavName}/campaigns-waiting`,
             pro: false,
           },
           {
-            name: "Chi tiết kế hoạch",
-            path: `${firstNavName}/basic-tables`,
+            name: "Các chiến dịch đã duyệt",
+            path: `${firstNavName}/campaigns-in-progress`,
+            pro: false,
+          },
+          {
+            name: "Các chiến dịch đã hủy",
+            path: `${firstNavName}/campaigns-cancel`,
+            pro: false,
+          },
+          {
+            name: "Các chiến dịch đã hoàn thành",
+            path: `${firstNavName}/campaigns-completed`,
             pro: false,
           },
         ],

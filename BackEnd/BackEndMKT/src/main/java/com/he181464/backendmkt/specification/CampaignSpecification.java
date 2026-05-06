@@ -2,6 +2,8 @@ package com.he181464.backendmkt.specification;
 
 
 import com.he181464.backendmkt.entity.Campaign;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
@@ -53,6 +55,25 @@ public class CampaignSpecification {
                 return cb.conjunction();
             }
             return cb.greaterThanOrEqualTo(root.get("price"), price);
+        };
+    }
+
+    public static Specification<Campaign> hasAccountId(Integer accountId) {
+        return (root, query, cb) -> {
+            if (accountId == null) {
+                return cb.conjunction();
+            }
+
+            // Join từ Campaign - CampaignAccount
+            Join<Object, Object> campaignAccountJoin = root.join("campaignAccounts", JoinType.INNER);
+
+            //  Join tiếp sang Account
+            Join<Object, Object> accountJoin = campaignAccountJoin.join("account", JoinType.INNER);
+
+            //  Tránh duplicate Campaign khi join nhiều bản ghi
+            query.distinct(true);
+
+            return cb.equal(accountJoin.get("id"), accountId);
         };
     }
 

@@ -1,10 +1,13 @@
 package com.he181464.backendmkt.service.impl;
 
 import com.he181464.backendmkt.dto.AccountResponseDto;
+import com.he181464.backendmkt.dto.CampaignCostDTO;
 import com.he181464.backendmkt.dto.CampaignDTO;
+import com.he181464.backendmkt.dto.StatusCountDTO;
 import com.he181464.backendmkt.entity.Account;
 import com.he181464.backendmkt.entity.Campaign;
 import com.he181464.backendmkt.entity.CampaignAccount;
+import com.he181464.backendmkt.entity.DetailPlan;
 import com.he181464.backendmkt.exception.ObjectExistingException;
 import com.he181464.backendmkt.model.mapper.AccountMapper;
 import com.he181464.backendmkt.model.mapper.CampaignMapper;
@@ -12,6 +15,7 @@ import com.he181464.backendmkt.model.request.CampaignRequest;
 import com.he181464.backendmkt.repository.AccountRepository;
 import com.he181464.backendmkt.repository.CampaignAccountRepository;
 import com.he181464.backendmkt.repository.CampaignRepository;
+import com.he181464.backendmkt.repository.DetailPlanRepository;
 import com.he181464.backendmkt.service.CampaignService;
 import com.he181464.backendmkt.specification.CampaignSpecification;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -40,6 +45,7 @@ public class CampaignServiceImpl implements CampaignService {
     private final CampaignAccountRepository campaignAccountRepository;
     private final AccountRepository accountRepository;
     private final AccountMapper accountMapper;
+    private final DetailPlanRepository detailPlanRepository;
 
     @Override
     public CampaignDTO create(CampaignDTO dto) {
@@ -156,7 +162,8 @@ public class CampaignServiceImpl implements CampaignService {
                 .and(CampaignSpecification.hasName(campaignRequest.getName()))
                 .and(CampaignSpecification.hasStatus(campaignRequest.getStatus()))
                 .and(CampaignSpecification.hasUserLeader(campaignRequest.getUserResponsible()))
-                .and(CampaignSpecification.hasPriceGreaterThan(campaignRequest.getPrice()));
+                .and(CampaignSpecification.hasPriceGreaterThan(campaignRequest.getPrice()))
+                .and(CampaignSpecification.hasAccountId(campaignRequest.getAccountId()));
 
         Pageable pageable = PageRequest.of(
                 campaignRequest.getPage(),
@@ -201,6 +208,89 @@ public class CampaignServiceImpl implements CampaignService {
         }).toList();
 
         return new PageImpl<>(dtoList, pageable, page.getTotalElements());
+    }
+
+    @Override
+    public List<StatusCountDTO> getCampaignStatusChart() {
+        return campaignRepository.countByStatus()
+                .stream()
+                .map(obj -> new StatusCountDTO(
+                        (String) obj[0],
+                        ((Number) obj[1]).longValue()
+                ))
+                .toList();
+    }
+
+    @Override
+    public List<CampaignCostDTO> getCompletedCampaignCosts() {
+        return campaignRepository.getCompletedCampaignCosts()
+                .stream()
+                .map(obj -> {
+                    CampaignCostDTO dto = new CampaignCostDTO();
+                    dto.setName((String) obj[0]);
+                    dto.setEstimatedCost((BigDecimal) obj[1]);
+                    dto.setActualCost((BigDecimal) obj[2]);
+                    return dto;
+                }).toList();
+    }
+
+    @Override
+    @Transactional
+    public void completeCampaign(Long campaignId) {
+
+        // 1. Lấy campaign
+        Campaign campaign = campaignRepository.findById(campaignId)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy campaign"));
+
+        if (!"INPROGRESS".equals(campaign.getStatus())) {
+            throw new RuntimeException("Chỉ campaign đang triển khai mới được hoàn thành");
+        }
+
+        // 2. Lấy detail plans
+        List<DetailPlan> plans = detailPlanRepository.findByCampaignId(campaignId);
+
+        if (plans.isEmpty()) {
+            throw new RuntimeException("Campaign chưa có kế hoạch chi tiết");
+        }
+
+        // 3. Tổng task
+        long total = plans.size();
+
+        // 4. Task completed
+        List<DetailPlan> completedPlans = plans.stream()
+                .filter(p -> "COMPLETED".equals(p.getStatus()))
+                .toList();
+
+        long completed = completedPlans.size();
+
+        // 5. incurred_costs = chỉ tính task completed
+        BigDecimal incurredCosts = completedPlans.stream()
+                .map(DetailPlan::getPrice)
+                .filter(Objects::nonNull)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        // 6. % task
+        double taskPercent = total == 0 ? 0 : (completed * 100.0 / total);
+
+        // 7. % chi phí
+        double costPercent = 0;
+        if (campaign.getPrice() != null && campaign.getPrice().doubleValue() > 0) {
+            costPercent = incurredCosts.doubleValue() * 100 / campaign.getPrice().doubleValue();
+        }
+
+        // 8. Final percent
+        double finalPercent = 0.7 * taskPercent + 0.3 * costPercent;
+
+        // clamp max 100
+        finalPercent = Math.min(finalPercent, 100);
+
+        // 9. Update campaign
+        campaign.setIncurredCosts(incurredCosts);
+        campaign.setPercentTarget(BigDecimal.valueOf(finalPercent));
+        campaign.setStatus("COMPLETED");
+        campaign.setDateComplete(LocalDateTime.now());
+
+        campaignRepository.save(campaign);
     }
 
 

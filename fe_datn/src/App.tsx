@@ -13,7 +13,6 @@ import LineChart from "./pages/Charts/LineChart";
 import BarChart from "./pages/Charts/BarChart";
 import Calendar from "./pages/Calendar";
 import BasicTables from "./pages/Tables/BasicTables";
-import FormElements from "./pages/Forms/FormElements";
 import Blank from "./pages/Blank";
 import AppLayout from "./layout/AppLayout";
 import { ScrollToTop } from "./components/common/ScrollToTop";
@@ -23,6 +22,12 @@ import LeaderProtectedRouter from "./routerConfig/LeaderProtectedRouter";
 import AdminProtectedRouter from "./routerConfig/AdminProtectedRouter";
 import AccountManage from "./pages/Admin/AccountManage";
 import CreateCampaign from "./pages/Leader/CreateCampaign";
+import CampaignManage from "./pages/Admin/CampaignsAdmin";
+import ManageCampaignLeader from "./pages/Leader/ManageCampaign";
+import EmployeeProtectedRouter from "./routerConfig/EmployeeProtectedRouter";
+import ManageTask from "./pages/Leader/ManageTask";
+import CalendarEmployee from "./pages/Employee/CalendarEmployee";
+import ManageCampaignEmployee from "./pages/Employee/CampaignEmployee";
 
 export default function App() {
   return (
@@ -56,8 +61,7 @@ export default function App() {
             <Route path="calendar" element={<Calendar />} />
             <Route path="blank" element={<Blank />} />
 
-            {/* Forms */}
-            <Route path="form-elements" element={<FormElements />} />
+            <Route path="manage-tasks/:idCampaign" element={<ManageTask />} />
 
             {/* Tables */}
             <Route path="basic-tables" element={<BasicTables />} />
@@ -65,13 +69,7 @@ export default function App() {
             {/* Create Campaign */}
             <Route path="create-campaign" element={<CreateCampaign />} />
 
-            {/* Ui Elements */}
-            <Route path="alerts" element={<Alerts />} />
-            <Route path="avatars" element={<Avatars />} />
-            <Route path="badge" element={<Badges />} />
-            <Route path="buttons" element={<Buttons />} />
-            <Route path="images" element={<Images />} />
-            <Route path="videos" element={<Videos />} />
+            <Route path="list-campaign" element={<ManageCampaignLeader />} />
 
             {/* Charts */}
             {/* <Route path="/line-chart" element={<LineChart />} />
@@ -95,11 +93,26 @@ export default function App() {
 
             <Route path="accounts" element={<AccountManage />} />
 
-            {/* Forms */}
-            <Route path="form-elements" element={<FormElements />} />
-
             {/* Tables */}
             <Route path="basic-tables" element={<BasicTables />} />
+
+            {/* Campaigns */}
+            <Route
+              path="campaigns-waiting"
+              element={<CampaignManage key={"WAITING"} type="WAITING" />}
+            />
+            <Route
+              path="campaigns-completed"
+              element={<CampaignManage key={"COMPLETED"} type="COMPLETED" />}
+            />
+            <Route
+              path="campaigns-in-progress"
+              element={<CampaignManage key={"INPROGRESS"} type="INPROGRESS" />}
+            />
+            <Route
+              path="campaigns-cancel"
+              element={<CampaignManage key={"CANCELED"} type="CANCELED" />}
+            />
 
             {/* Ui Elements */}
             <Route path="alerts" element={<Alerts />} />
@@ -112,6 +125,30 @@ export default function App() {
             {/* Charts */}
             {/* <Route path="/line-chart" element={<LineChart />} />
             <Route path="/bar-chart" element={<BarChart />} /> */}
+          </Route>
+          <Route
+            path="/employee"
+            element={
+              <EmployeeProtectedRouter>
+                <AppLayout role="EMPLOYEE" />
+              </EmployeeProtectedRouter>
+            }
+          >
+            <Route index element={<CalendarEmployee />} />
+            {/* Others Page */}
+            <Route path="profile" element={<UserProfiles />} />
+
+            <Route
+              path="employee-campaigns"
+              element={<ManageCampaignEmployee />}
+            />
+
+            <Route path="manage-tasks/:idCampaign" element={<ManageTask />} />
+
+            {/* Tables */}
+            <Route path="basic-tables" element={<BasicTables />} />
+
+            <Route path="list-campaign" element={<ManageCampaignLeader />} />
           </Route>
 
           {/* Auth Layout */}

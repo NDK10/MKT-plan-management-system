@@ -21,6 +21,8 @@ public class CampaignRequest {
 
     private Long userResponsible;
 
+    private Integer accountId;
+
     private Integer page;
 
     private Integer size;

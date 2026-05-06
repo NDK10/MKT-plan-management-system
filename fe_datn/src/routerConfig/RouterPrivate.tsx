@@ -8,11 +8,13 @@ export default function RouterPrivate({ children }) {
     return children;
   } else {
     const decoded = jwtDecode(localStorage.getItem("accessToken"));
-    if (decoded.role === "LEADER") return <Navigate to="/leader" replace />;
-    else if (decoded.role === "EMPLOYEE")
+    if (decoded.role === "LEADER") {
+      return <Navigate to="/leader" replace />;
+    } else if (decoded.role === "EMPLOYEE") {
       return <Navigate to="/employee" replace />;
-    else if (decoded.role === "ADMIN") return <Navigate to="/admin" replace />;
-    else {
+    } else if (decoded.role === "ADMIN") {
+      return <Navigate to="/admin" replace />;
+    } else {
       return <NotFound />;
     }
   }
