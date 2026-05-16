@@ -93,7 +93,7 @@ const assignedNavItems = (role: string) => {
         name: "Trợ thủ AI",
         icon: <PageIcon />,
         subItems: [
-          { name: "Blank Page", path: `${firstNavName}/blank`, pro: false },
+          { name: "Hỏi đáp", path: `${firstNavName}/prompt`, pro: false },
           { name: "404 Error", path: `${firstNavName}/error-404`, pro: false },
         ],
       },
@@ -119,7 +119,7 @@ const assignedNavItems = (role: string) => {
         name: "Trợ thủ AI",
         icon: <PageIcon />,
         subItems: [
-          { name: "Blank Page", path: `${firstNavName}/blank`, pro: false },
+          { name: "Hỏi đáp", path: `${firstNavName}/prompt`, pro: false },
           { name: "404 Error", path: `${firstNavName}/error-404`, pro: false },
         ],
       },

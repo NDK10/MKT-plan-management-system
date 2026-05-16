@@ -28,6 +28,7 @@ import EmployeeProtectedRouter from "./routerConfig/EmployeeProtectedRouter";
 import ManageTask from "./pages/Leader/ManageTask";
 import CalendarEmployee from "./pages/Employee/CalendarEmployee";
 import ManageCampaignEmployee from "./pages/Employee/CampaignEmployee";
+import AIChatScreen from "./pages/ChatBot";
 
 export default function App() {
   return (
@@ -58,7 +59,7 @@ export default function App() {
 
             {/* Others Page */}
             <Route path="profile" element={<UserProfiles />} />
-            <Route path="calendar" element={<Calendar />} />
+
             <Route path="blank" element={<Blank />} />
 
             <Route path="manage-tasks/:idCampaign" element={<ManageTask />} />
@@ -70,6 +71,8 @@ export default function App() {
             <Route path="create-campaign" element={<CreateCampaign />} />
 
             <Route path="list-campaign" element={<ManageCampaignLeader />} />
+
+            <Route path="prompt" element={<AIChatScreen />} />
 
             {/* Charts */}
             {/* <Route path="/line-chart" element={<LineChart />} />
@@ -142,6 +145,8 @@ export default function App() {
               path="employee-campaigns"
               element={<ManageCampaignEmployee />}
             />
+
+            <Route path="prompt" element={<AIChatScreen />} />
 
             <Route path="manage-tasks/:idCampaign" element={<ManageTask />} />
 
