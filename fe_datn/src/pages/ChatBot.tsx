@@ -32,6 +32,7 @@ export default function AIChatScreen() {
   ]);
 
   const [input, setInput] = useState("");
+  const [context, setContext] = useState("");
   const [loading, setLoading] = useState(false);
 
   const [fileList, setFileList] = useState([]);
@@ -57,24 +58,39 @@ export default function AIChatScreen() {
 
     setMessages((prev) => [...prev, userMessage]);
 
-    const currentInput = input;
     const currentFiles = fileList;
+
+    let updatedContext = context + `\n\nUser: ${input}\n`;
+
+    // LIMIT CONTEXT
+    const MAX_CONTEXT = 12000;
+
+    if (updatedContext.length > MAX_CONTEXT) {
+      updatedContext = updatedContext.slice(-MAX_CONTEXT);
+    }
 
     setInput("");
     setFileList([]);
-
     setLoading(true);
 
     try {
-      const response = await AIService.chatAI(currentInput, currentFiles);
+      const response = await AIService.chatAI(updatedContext, currentFiles);
+
+      const aiContent = response.data.choices[0].message.content;
 
       const aiMessage = {
         role: "assistant",
-        content: response.data,
+        content: aiContent,
       };
 
       setMessages((prev) => [...prev, aiMessage]);
+
+      updatedContext += `\nAssistant: ${aiContent}\n`;
+
+      setContext(updatedContext);
     } catch (error) {
+      console.error(error);
+
       setMessages((prev) => [
         ...prev,
         {

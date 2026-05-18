@@ -90,13 +90,136 @@ public class OpenAiService {
 
             } catch (HttpClientErrorException.TooManyRequests e) {
 
+                System.out.println("429 RATE LIMIT");
+                System.out.println(e.getResponseBodyAsString());
+
                 keyService.markRateLimited(key);
 
                 retry++;
 
+            } catch (HttpClientErrorException e) {
+
+                System.out.println("HTTP ERROR");
+                System.out.println("STATUS: " + e.getStatusCode());
+                System.out.println("BODY: " + e.getResponseBodyAsString());
+
+                throw e;
             } catch (Exception e) {
 
+                e.printStackTrace();
+
+                throw new RuntimeException(e);
+            }
+        }
+
+        throw new RuntimeException("All API keys exhausted");
+    }
+
+
+    public String callOpenRouter(String prompt) {
+
+        int retry = 0;
+
+        while (retry < 5) {
+
+            OpenAiApiKey key = keyService.getFirstKey();
+
+            try {
+
+                String url = "https://openrouter.ai/api/v1/chat/completions";
+
+                HttpHeaders headers = new HttpHeaders();
+
+                headers.setBearerAuth(key.getApiKey());
+                headers.setContentType(MediaType.APPLICATION_JSON);
+
+                // optional nhưng nên có
+                headers.set("HTTP-Referer", "http://localhost:3000");
+                headers.set("X-Title", "Marketing AI");
+
+                Map<String, Object> body = new HashMap<>();
+
+                body.put("model", "qwen/qwen-2.5-7b-instruct");
+
+                body.put(
+                        "messages",
+                        List.of(
+                                Map.of(
+                                        "role",
+                                        "system",
+                                        "content",
+                                        """
+                                                Bạn là AI chuyên gia marketing.
+                                                
+                                                Bạn có nhiệm vụ:
+                                                - đánh giá kế hoạch marketing
+                                                - phân tích chiến lược
+                                                - đề xuất cải thiện
+                                                - phân tích SEO
+                                                - Branding
+                                                - Facebook Ads
+                                                - Google Ads
+                                                - Content Marketing
+                                                - Social Media
+                                                
+                                                Hãy trả lời chi tiết, chuyên nghiệp và đúng trọng tâm.
+                                                
+                                                Nếu người dùng hỏi ngoài lĩnh vực marketing thì trả lời:
+                                                'Tôi chỉ hỗ trợ nghiệp vụ marketing.'
+                                                """
+                                ),
+                                Map.of(
+                                        "role",
+                                        "user",
+                                        "content",
+                                        prompt
+                                )
+                        )
+                );
+
+                body.put("temperature", 0.7);
+                body.put("max_tokens", 4000);
+
+                HttpEntity<?> entity =
+                        new HttpEntity<>(body, headers);
+
+                ResponseEntity<String> response =
+                        restTemplate.postForEntity(
+                                url,
+                                entity,
+                                String.class
+                        );
+
+                return response.getBody();
+
+            } catch (HttpClientErrorException.TooManyRequests e) {
+
+                System.out.println("429 RATE LIMIT");
+                System.out.println(e.getResponseBodyAsString());
+
+                keyService.markRateLimited(key);
+
                 retry++;
+
+                try {
+                    Thread.sleep(3000);
+                } catch (InterruptedException ex) {
+                    Thread.currentThread().interrupt();
+                }
+
+            } catch (HttpClientErrorException e) {
+
+                System.out.println("HTTP ERROR");
+                System.out.println("STATUS: " + e.getStatusCode());
+                System.out.println("BODY: " + e.getResponseBodyAsString());
+
+                throw e;
+
+            } catch (Exception e) {
+
+                e.printStackTrace();
+
+                throw new RuntimeException(e);
             }
         }
 
@@ -156,7 +279,7 @@ public class OpenAiService {
                         extractedText
                 );
 
-        return callOpenAi(finalPrompt);
+        return callOpenRouter(finalPrompt);
     }
 
 
