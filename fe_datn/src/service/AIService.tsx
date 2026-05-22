@@ -1,5 +1,6 @@
 import React from "react";
 import axiosApi from "../axiosConfig/AxiosApi";
+import { API_URL } from "../axiosConfig/Api";
 
 const AIService = {
   chatAI: async (message: string, files: any[]) => {
@@ -11,7 +12,7 @@ const AIService = {
       formData.append("files", file.originFileObj);
     });
 
-    return axiosApi.post("http://localhost:8063/api/openai/chat", formData, {
+    return axiosApi.post(`${API_URL}/api/openai/chat`, formData, {
       headers: {
         "Content-Type": "multipart/form-data",
       },

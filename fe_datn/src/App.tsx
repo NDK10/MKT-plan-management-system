@@ -55,8 +55,6 @@ export default function App() {
               </LeaderProtectedRouter>
             }
           >
-            <Route index element={<Home />} />
-
             {/* Others Page */}
             <Route path="profile" element={<UserProfiles />} />
 

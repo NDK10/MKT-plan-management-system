@@ -21,7 +21,7 @@ export default function SignInForm() {
     // Call the sign-in function from AuthService
     try {
       const response = await AuthService.signIn(email, password);
-      console.log(response);
+
       if (response.status === 200) {
         localStorage.setItem("accessToken", response.data.accessToken);
         localStorage.setItem("refreshToken", response.data.refreshToken);
@@ -29,7 +29,7 @@ export default function SignInForm() {
         const decoded = jwtDecode(token);
 
         if (decoded.role === "LEADER") {
-          navigate("/leader");
+          navigate("/leader/list-campaign");
         } else if (decoded.role === "EMPLOYEE") {
           navigate("/employee");
         } else if (decoded.role === "ADMIN") {
