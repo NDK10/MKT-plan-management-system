@@ -23,8 +23,6 @@ public interface AccountRepository extends JpaRepository<Account, Long>, JpaSpec
 
     Optional<Account> findByEmail(String email);
 
-    List<Account> findAllByStatusTrue();
-
     Optional<Account> findById(Long accountId);
 
     Account findAccountsById(Long accountId);
