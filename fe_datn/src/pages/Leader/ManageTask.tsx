@@ -74,6 +74,7 @@ export default function ManageTask() {
   useEffect(() => {
     async function fetchCampaignDetails() {
       const res = await CampaignService.getDetailById(Number(idCampaign));
+      console.log(res);
       const resTask = await DetailPlanService.search(filter);
       setListPerformer(res?.data?.accountResponseDtoList || []);
       setCampaignName(res.data.name);

@@ -26,7 +26,6 @@ export default function AccountDetailForm({
   useEffect(() => {
     const fetchData = async () => {
       const res = await AccountService.getAccountRole();
-      console.log(res);
       setListRole(res?.data || []);
     };
     fetchData();
@@ -70,7 +69,11 @@ export default function AccountDetailForm({
       detailForm.resetFields();
       setFilter({ ...filter }); // reload table
     } catch (err) {
-      console.log("Validate failed:", err);
+      notification.error({
+        message: err?.response?.data || "Có lỗi xảy ra",
+        placement: "topRight",
+        getContainer: () => document.body, // ép ra ngoài layout
+      });
     }
   };
   const handleCancel = () => {

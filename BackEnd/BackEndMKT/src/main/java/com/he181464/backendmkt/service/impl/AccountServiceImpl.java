@@ -43,7 +43,7 @@ public class AccountServiceImpl implements AccountService {
     @Transactional
     public boolean createAccount(AccountDto accountDto) {
         if (accountRepository.findByEmail(accountDto.getEmail()).isPresent()) {
-            throw new ObjectExistingException("Email already exists");
+            throw new ObjectExistingException("Email đã tồn tại");
         }
         Account account = new Account();
         account.setEmail(accountDto.getEmail());
@@ -62,14 +62,14 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public Account getAccountByEmailToGenerate2Fa(String email) {
         Account account = accountRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("Account not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy tài khoản"));
         return account;
     }
 
     @Override
     public String get2FaSecretByEmail(String email) {
         Account account = accountRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("Account not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy tài khoản"));
         return account.getSecretCode();
     }
 
@@ -82,7 +82,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     public Long getAccountIdByEmail(String email) {
         Account account = accountRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("Account not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy tài khoản"));
         return account.getId();
     }
 
@@ -125,7 +125,7 @@ public class AccountServiceImpl implements AccountService {
     @Transactional
     public void resetPassword(String email, String newPassword) {
         Account account = accountRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("Account not found"));
+                .orElseThrow(() -> new IllegalArgumentException("Không tìm thấy tài khoản"));
         account.setPassword(passwordEncoder.encode(newPassword));
         account.setSecretCode(null);
         accountRepository.save(account);
