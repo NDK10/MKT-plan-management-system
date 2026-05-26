@@ -290,6 +290,25 @@ public class CampaignServiceImpl implements CampaignService {
         campaign.setStatus("COMPLETED");
         campaign.setDateComplete(LocalDateTime.now());
 
+
+        System.out.println("===== COMPLETE CAMPAIGN =====");
+
+        System.out.println("Campaign ID: " + campaignId);
+
+        System.out.println("Total plans: " + total);
+        System.out.println("Completed plans: " + completed);
+
+        completedPlans.forEach(p -> {
+            System.out.println(
+                    "PLAN ID=" + p.getId()
+                            + " | STATUS=" + p.getStatus()
+                            + " | PRICE=" + p.getPrice()
+            );
+        });
+
+        System.out.println("Incurred Costs = " + incurredCosts);
+        System.out.println("Final Percent = " + finalPercent);
+
         campaignRepository.save(campaign);
     }
 
