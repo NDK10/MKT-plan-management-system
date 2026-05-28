@@ -1,6 +1,7 @@
 import { jwtDecode } from "jwt-decode";
 import React from "react";
 import { Navigate } from "react-router";
+import NotFound from "../pages/OtherPage/NotFound";
 
 export default function EmployeeProtectedRouter({ children }) {
   const token = localStorage.getItem("accessToken");
